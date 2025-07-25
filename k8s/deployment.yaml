@@ -17,14 +17,12 @@ spec:
     spec:
       containers:
         - name: demo-app
-          image: ghcr.io/yiannis-gkoufas/argocd-app-demo:latest
+          image: ghcr.io/yiannis-gkoufas/argocd-nginx-demo:latest
           ports:
             - containerPort: 3000
           env:
             - name: APP_VERSION
               value: "1.0.0"
-            - name: BUILD_TIME
-              value: "2024-01-01T00:00:00Z"
           resources:
             requests:
               memory: "64Mi"

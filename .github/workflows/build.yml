@@ -35,7 +35,7 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=ref,event=branch
-            type=sha,prefix={{branch}}-
+            type=sha,prefix=main-
             type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Build and push Docker image
@@ -47,19 +47,4 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             APP_VERSION=${{ github.sha }}
-            BUILD_TIME=${{ steps.meta.outputs.labels }}
-
-      - name: Update Kubernetes manifests
-        if: github.ref == 'refs/heads/main'
-        run: |
-          # Update the image tag in deployment.yaml
-          sed -i "s|image: ghcr.io/${{ github.repository }}:.*|image: ghcr.io/${{ github.repository }}:main-${GITHUB_SHA::7}|g" k8s/deployment.yaml
-          
-          # Configure git
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          
-          # Commit and push changes
-          git add k8s/deployment.yaml
-          git diff --staged --quiet || git commit -m "Update image tag to main-${GITHUB_SHA::7}"
-          git push
+            BUILD_TIME=${{ github.event.head_commit.timestamp }}
